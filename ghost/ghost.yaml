@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ghost
+  labels:
+    app: ghost
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: hostpath
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghost
+  labels:
+    app: ghost
+spec:
+  ports:
+  - name: http
+    port: 2368
+  selector:
+    app: ghost
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost
+  labels:
+    app: ghost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      containers:
+      - name: ghost
+        image: ghost:2.18.3
+        ports:
+        - containerPort: 2368
+        volumeMounts:
+        - name: ghost
+          mountPath: /var/lib/ghost/content
+        - name: ghost-config
+          mountPath: /var/lib/ghost/config.production.json
+          subPath: config.production.json
+        env:
+        - name: NODE_ENV
+          value: production
+      volumes:
+      - name: ghost
+        persistentVolumeClaim:
+          claimName: ghost
+      - name: ghost-config
+        configMap:
+          name: ghost-config
+          items:
+          - key: config.production.json
+            path: config.production.json
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ghost
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: ghost
+          servicePort: 2368
