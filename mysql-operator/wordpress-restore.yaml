@@ -1,0 +1,9 @@
+apiVersion: mysql.oracle.com/v1alpha1
+kind: Restore
+metadata:
+  name: wordpress-restore
+spec:
+  clusterRef:
+    name: mysql
+  backupRef:
+    name: wordpress-backup

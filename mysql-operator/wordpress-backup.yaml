@@ -1,0 +1,19 @@
+apiVersion: mysql.oracle.com/v1alpha1
+kind: Backup
+metadata:
+  name: wordpress-backup
+spec:
+  executor:
+    mysqldump:
+      databases:
+      - name: wordpress
+  storageProvider:
+    s3:
+      endpoint: http://minio.default.svc.cluster.local:9000
+      region: minio
+      bucket: mysqldump
+      forcePathStyle: true
+      credentialsSecret:
+        name: minio-credentials
+  cluster:
+    name: mysql
