@@ -9,7 +9,7 @@ A Debian Pod useful for debugging.
 ### Deploy
 
 ```bash
-kubectl -n default apply -f ./debian-pod.yaml
+kubectl -n default apply -f ./debian.yaml
 ```
 
 ### Usage
