@@ -1,0 +1,4 @@
+enableSkipLogin: true
+
+rbac:
+  clusterAdminRole: true
