@@ -1,0 +1,10 @@
+# https://github.com/rancher/rke/issues/607
+command:
+- "/heapster"
+- "--source=kubernetes:https://kubernetes.default?useServiceAccount=true&kubeletHttps=true&kubeletPort=10250&insecure=true"
+
+# kubectl -n kube-system create sa heapster
+# kubectl create clusterrolebinding heapster --clusterrole=cluster-admin --serviceaccount=kube-system:heapster
+rbac:
+  create: false
+  serviceAccountName: heapster
