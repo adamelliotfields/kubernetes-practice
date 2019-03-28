@@ -3,7 +3,7 @@
   "server": { "host": "0.0.0.0", "port": 2368 },
   "database": {
     "client": "mysql",
-    "connection": { "host": "mysql-0.default.svc.cluster.local", "port": 3306, "user": "ghost", "password": "ghost", "database": "ghost" }
+    "connection": { "host": "mysql-router.default.svc.cluster.local", "port": 6446, "user": "ghost", "password": "ghost", "database": "ghost" }
   },
   "mail": { "transport": "direct" },
   "logging": { "transports": ["stdout"] },
