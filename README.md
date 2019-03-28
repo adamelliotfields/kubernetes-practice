@@ -26,6 +26,7 @@ stuff to work.
 
   - loki
   - metallb
+  - cert-manager
   - minio (standalone and distributed)
   - kubedb
   - traefik
