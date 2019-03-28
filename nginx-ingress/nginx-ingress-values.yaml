@@ -1,0 +1,8 @@
+controller:
+  kind: DaemonSet
+  stats:
+    enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
