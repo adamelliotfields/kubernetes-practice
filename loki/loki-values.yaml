@@ -1,0 +1,5 @@
+loki:
+  persistence:
+    # Defaults to 10Gi ReadWriteOnce
+    enabled: true
+    storageClassName: hostpath
