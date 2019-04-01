@@ -1,0 +1,5 @@
+persistence:
+  # Defaults to 10Gi ReadWriteOnce
+  storageClass: hostpath
+environment:
+  MINIO_REGION: 'us-east-1'
