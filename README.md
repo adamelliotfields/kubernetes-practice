@@ -10,25 +10,33 @@ stuff to work.
 
 ### Workloads
 
+  - [cert-manager](./cert-manager/)
   - [cilium](./cilium/)
   - [debian](./debian/)
   - [ghost](./ghost/)
   - [heapster](./heapster/)
+  - [helm](./helm/)
   - [kube-prometheus](./kube-prometheus/)
   - [kubernetes-dashboard](./kubernetes-dashboard/)
+  - [loki](./loki/)
+  - [metallb](./metallb/)
   - [metrics-server](./metrics-server/)
+  - [minio](./minio/)
   - [mysql-operator](./mysql-operator/)
   - [nginx](./nginx/)
   - [nginx-ingress](./nginx-ingress/)
   - [prometheus-mysql-exporter](./prometheus-mysql-exporter/)
 
+### Tools
+
+  - [tools](./tools/)
+
 ### TODO
 
-  - loki
-  - metallb
-  - cert-manager
-  - minio (standalone and distributed)
+  - kubeadm
+  - external-dns
+  - local-provisioner
+  - nfs
   - kubedb
-  - traefik
-  - contour
+  - wordpress
   - jaeger
