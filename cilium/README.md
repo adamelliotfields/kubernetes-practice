@@ -9,7 +9,7 @@ This example uses the ETCD node and certificates deployed when creating a Kubead
 ```bash
 USER=adam
 
-sudo kubectl create secret generic cilium-etcd-secrets \
+sudo kubectl -n kube-system create secret generic cilium-etcd-secrets \
 -n kube-system \
 --kubeconfig="/home/${USER}/.kube/config" \
 --from-file=/etc/kubernetes/pki/etcd/ca.crt \
@@ -19,14 +19,15 @@ sudo kubectl create secret generic cilium-etcd-secrets \
 
 ### Download `cilium-external-etcd`
 
+Make sure the manifest matches your Kubernetes version (1.13 shown here).
+
 ```bash
 wget https://raw.githubusercontent.com/cilium/cilium/v1.4/examples/kubernetes/1.13/cilium-external-etcd.yaml
 ```
 
 ### Edit the ConfigMap in the manifest
 
-Run `kubectl get pod etcd-kubernetes -o=jsonpath='{.spec.containers[0].command}'` to get the
-`--advertise-client-urls` address from ETCD.
+Run `kubectl -n kube-system get po` to find the ETCD Pod and get the `--advertise-client-urls` flag.
 
 ```yaml
 ...
@@ -44,5 +45,5 @@ data:
 ### Deploy Cilium
 
 ```bash
-kubectl apply -f ./cilium-external-etcd.yaml
+kubectl -n kube-system apply -f ./cilium-external-etcd.yaml
 ```
