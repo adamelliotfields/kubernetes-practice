@@ -8,6 +8,10 @@ I've been playing around with Kubernetes for a couple years now, but failed to w
 learned, which is bad news bears. So, this repo serves as my personal Wiki for documenting how I got
 stuff to work.
 
+### Installation
+
+  - [kubeadm](./kubeadm/)
+
 ### Workloads
 
   - [cert-manager](./cert-manager/)
