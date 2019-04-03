@@ -37,7 +37,6 @@ stuff to work.
 
 ### TODO
 
-  - kubeadm
   - external-dns
   - local-provisioner
   - nfs
