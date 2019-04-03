@@ -6,6 +6,9 @@ This example uses the ETCD node and certificates deployed when creating a Kubead
 
 ### Create `cilium-etcd-secrets`
 
+The certificates and paths here are created by Kubeadm. They could be different if you set up
+Kubernetes and ETCD a different way.
+
 ```bash
 USER=adam
 
@@ -19,15 +22,16 @@ sudo kubectl -n kube-system create secret generic cilium-etcd-secrets \
 
 ### Download `cilium-external-etcd`
 
-Make sure the manifest matches your Kubernetes version (1.13 shown here).
+Make sure the manifest matches your Kubernetes version (1.14 shown here).
 
 ```bash
-wget https://raw.githubusercontent.com/cilium/cilium/v1.4/examples/kubernetes/1.13/cilium-external-etcd.yaml
+wget https://raw.githubusercontent.com/cilium/cilium/v1.5.0-rc2/examples/kubernetes/1.14/cilium-external-etcd.yaml
 ```
 
 ### Edit the ConfigMap in the manifest
 
-Run `kubectl -n kube-system get po` to find the ETCD Pod and get the `--advertise-client-urls` flag.
+Change `EDIT-ME-ETCD-ADDRESS` to your ETCD advertise address (the public IP of your Master node if
+using Kubeadm). Make sure the protocol is `https`.
 
 ```yaml
 ...
@@ -35,10 +39,25 @@ data:
   etcd-config: |-
     ---
     endpoints:
-      - https://<ETCD_ADVERTISE_CLIENT_URL>:2379
+      - https://EDIT-ME-ETCD-ADDRESS:2379
     ca-file: '/var/lib/etcd-secrets/ca.crt'
     key-file: '/var/lib/etcd-secrets/server.key'
     cert-file: '/var/lib/etcd-secrets/server.crt'
+...
+```
+
+### Edit the Deployment in the manifest
+
+Add the toleration to the PodSpec so you can deploy the Cilium Operator on the Master node.
+
+```yaml
+...
+spec:
+  template:
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
 ...
 ```
 
