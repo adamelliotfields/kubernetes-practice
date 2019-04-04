@@ -28,7 +28,7 @@ cluster.
 ### Deploy
 
 ```bash
-helm install stable/metallb
+helm install stable/metallb \
 -f ./metallb-values.yaml \
 --name=metallb \
 --namespace=kube-system
