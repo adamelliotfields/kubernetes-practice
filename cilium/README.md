@@ -12,7 +12,7 @@ Kubernetes and ETCD a different way.
 ```bash
 USER=adam
 
-sudo kubectl -n kube-system create secret generic cilium-etcd-secrets \
+sudo kubectl create secret generic cilium-etcd-secrets \
 -n kube-system \
 --kubeconfig="/home/${USER}/.kube/config" \
 --from-file=/etc/kubernetes/pki/etcd/ca.crt \
