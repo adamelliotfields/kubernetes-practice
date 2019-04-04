@@ -20,6 +20,7 @@ stuff to work.
   - [ghost](./ghost/)
   - [heapster](./heapster/)
   - [helm](./helm/)
+  - [hostpath-provisioner](./hostpath-provisioner/)
   - [kube-prometheus](./kube-prometheus/)
   - [kubernetes-dashboard](./kubernetes-dashboard/)
   - [loki](./loki/)
