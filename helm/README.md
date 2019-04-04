@@ -9,7 +9,8 @@ First download the Helm binary.
 ```bash
 wget -P /tmp https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz
 tar -C /tmp -xzf /tmp/helm-v2.13.1-linux-amd64.tar.gz
-sudo cp /tmp/linux-amd64/helm /user/local/bin/helm
+sudo cp /tmp/linux-amd64/helm /usr/local/bin/helm
+sudo chmod +x /usr/local/bin/helm
 ```
 
 Before deploying Tiller to the cluster, you need to create a ServiceAccount and ClusterRoleBinding.
