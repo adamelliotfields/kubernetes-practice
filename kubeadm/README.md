@@ -1,4 +1,4 @@
-# Kubeadm
+# Installation with Kubeadm
 
 > Provisioning instructions for a fresh Debian server using Kubeadm on DigitalOcean.
 
@@ -10,16 +10,16 @@ require more memory.
 
 Make sure you configure a [firewall](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)!
 
-All commands below are to be run by root. You can also paste the contents of [cloud-init.sh](./cloud-init.sh)
-into the User Data field of your cloud provider.
+You can also paste the contents of [cloud-init.sh](./cloud-init.sh) into the User Data field of your
+cloud provider (you might want to customize it first).
 
 ### Preparation
 
 First replace the stock `sshd_config` with a more secure one. You can view mine [here](https://gist.github.com/adamelliotfields/c12a78019cb964dcccf302263054f0b3).
 
-Note that this disables password authentication. Your server needs to have a RSA public key on it,
-and you need to have the matching private key on any devices you plan on using to connect to the
-server.
+Note that this disables password authentication. Your server needs to have a RSA public key in
+`~/.ssh/authorized_keys`, and you need to have the matching private key on any devices you plan on
+using to connect to the server.
 
 Optionally, you can install [sshguard](https://bitbucket.org/sshguard/sshguard) to block brute-force
 SSH attempts.
@@ -27,27 +27,34 @@ SSH attempts.
 ```bash
 SSHD_CONFIG_URL='https://gist.githubusercontent.com/adamelliotfields/c12a78019cb964dcccf302263054f0b3/raw/0275c07893bef7d41945be7f5dcd62c7451da0c5/sshd_config'
 
-wget -q -O /etc/ssh/sshd_config "$SSHD_CONFIG_URL"
+sudo wget -q -O /etc/ssh/sshd_config "$SSHD_CONFIG_URL"
 
-service sshd restart
+sudo service sshd restart
 ```
 
-Create a new sudo user and copy the `.ssh` folder. This process could be different depending on how
-your cloud provider provisions VMs for you. Basically, you want a passwordless sudo user with a
-public RSA key in `~/.ssh/authorized_keys`.
+Create a new sudo user and copy the existing `.ssh` folder.
+
+This process could be different depending on how your cloud provider provisions VMs for you.
+
+DigitalOcean does not create a user for you (you start with `root`).
+
+AWS creates a user based on the machine image being used:
+  - `ubuntu` for Ubuntu
+  - `admin` for Debian
+  - `ec2-user` for Amazon Linux
 
 ```bash
 USER='adam'
 
-adduser --disabled-password --gecos '' "$USER"
+sudo adduser --disabled-password --gecos '' "$USER"
 
-usermod -aG sudo "$USER"
+sudo usermod -aG sudo "$USER"
 
-echo "$USER ALL=(ALL) NOPASSWD:ALL" | tee "/etc/sudoers.d/${USER}"
+echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers.d/${USER}"
 
-cp -r /root/.ssh "/home/${USER}"
+sudo cp -r /root/.ssh "/home/${USER}"
 
-chown -R "$USER":"$USER" "/home/${USER}/.ssh"
+sudo chown -R "$USER":"$USER" "/home/${USER}/.ssh"
 ```
 
 ### Micro
@@ -61,11 +68,11 @@ wget -q -O "/tmp/micro-${MICRO_VERSION}-linux64.tar.gz" "https://github.com/zyed
 
 tar -C /tmp -xzf "/tmp/micro-${MICRO_VERSION}-linux64.tar.gz"
 
-cp "/tmp/micro-${MICRO_VERSION}/micro" /usr/local/bin/micro
+sudo cp "/tmp/micro-${MICRO_VERSION}/micro" /usr/local/bin/micro
 
-chmod +x /usr/local/bin/micro
+sudo chmod +x /usr/local/bin/micro
 
-cat <<'EOF' | tee /etc/profile.d/micro.sh > /dev/null
+cat <<'EOF' | sudo tee /etc/profile.d/micro.sh > /dev/null
 export EDITOR='/usr/local/bin/micro'
 export VISUAL="$EDITOR"
 EOF
@@ -86,32 +93,32 @@ USER='adam'
 # apt-cache madison docker-ce | grep 18.09 | head -1 | awk -F \| '{print $2}' | sed 's/\s//g'
 DOCKER_VERSION='5:18.09.4~3-0~debian-stretch'
 
-apt-get update
+sudo apt-get update
 
-apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
 
-curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 
-echo 'deb [arch=amd64] https://download.docker.com/linux/debian stretch stable' | tee /etc/apt/sources.list.d/docker-ce.list
+echo 'deb [arch=amd64] https://download.docker.com/linux/debian stretch stable' | sudo tee /etc/apt/sources.list.d/docker-ce.list
 
-apt-get update
+sudo apt-get update
 
-apt-get install -y docker-ce="$DOCKER_VERSION" docker-ce-cli="$DOCKER_VERSION"
+sudo apt-get install -y docker-ce="$DOCKER_VERSION" docker-ce-cli="$DOCKER_VERSION"
 
-apt-mark hold docker-ce docker-ce-cli
+sudo apt-mark hold docker-ce docker-ce-cli
 
-usermod -aG docker "$USER"
+sudo usermod -aG docker "$USER"
 
 # Update the daemon arguments
-sed -i 's/^ExecStart.*/ExecStart=\/usr\/bin\/dockerd -H fd:\/\/ --containerd=\/run\/containerd\/containerd.sock --exec-opt=native.cgroupdriver=systemd --iptables=false/g' /lib/systemd/system/docker.service
+sudo sed -i 's/^ExecStart.*/ExecStart=\/usr\/bin\/dockerd -H fd:\/\/ --containerd=\/run\/containerd\/containerd.sock --exec-opt=native.cgroupdriver=systemd --iptables=false/g' /lib/systemd/system/docker.service
 
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
-systemctl enable docker.service
+sudo systemctl enable docker.service
 
-service docker restart
+sudo service docker restart
 
-iptables -P FORWARD ACCEPT
+sudo iptables -P FORWARD ACCEPT
 ```
 
 ### Kubernetes
@@ -121,17 +128,17 @@ iptables -P FORWARD ACCEPT
 # apt-cache madison kubeadm | grep 1.14 | head -1 | cut -d '|' -f 2 | xargs
 KUBE_VERSION='1.14.0-00'
 
-curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
-echo 'deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main' | tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-apt-get update
+sudo apt-get update
 
-apt-get install -y kubeadm="$KUBE_VERSION" kubectl="$KUBE_VERSION" kubelet="$KUBE_VERSION"
+sudo apt-get install -y kubeadm="$KUBE_VERSION" kubectl="$KUBE_VERSION" kubelet="$KUBE_VERSION"
 
-apt-mark hold kubeadm kubectl kubelet
+sudo apt-mark hold kubeadm kubectl kubelet
 
-systemctl enable kubelet.service
+sudo systemctl enable kubelet.service
 ```
 
 You can now run `kubeadm init` on your Master node. Once it's finished, copy your `KUBECONFIG` to
@@ -140,11 +147,11 @@ your home folder (or use SCP to copy to your local device).
 ```bash
 USER='adam'
 
-mkdir -p "/home/${USER}/.kube"
+sudo mkdir -p "/home/${USER}/.kube"
 
-cp /etc/kubernetes/admin.conf "/home/${USER}/.kube/config"
+sudo cp /etc/kubernetes/admin.conf "/home/${USER}/.kube/config"
 
-chown -R "$USER":"$USER" "/home/${USER}/.kube"
+sudo chown -R "$USER":"$USER" "/home/${USER}/.kube"
 ```
 
 You can now install a CNI plugin (Weave, Flannel, Cilium, etc) and add Worker nodes to your cluster.
