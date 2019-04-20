@@ -18,7 +18,7 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
 echo 'deb [arch=amd64] https://download.docker.com/linux/debian stretch stable' | tee /etc/apt/sources.list.d/docker-ce.list > /dev/null
-echo 'deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main' | tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main' | tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
 
 apt-get update
 apt-get install -y docker-ce="$DOCKER_VERSION" docker-ce-cli="$DOCKER_VERSION" kubeadm="$KUBE_VERSION" kubectl="$KUBE_VERSION" kubelet="$KUBE_VERSION"
