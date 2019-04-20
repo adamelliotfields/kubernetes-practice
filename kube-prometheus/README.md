@@ -25,7 +25,7 @@ This example has the following configuration changes:
 
 ```bash
 # Install jsonnet
-go get github.com/google/go-jsonnet/jsonnet
+go get github.com/google/go-jsonnet/cmd/jsonnet
 
 # Install jsonnet-bundler
 go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
@@ -37,19 +37,19 @@ go get github.com/brancz/gojsontoyaml
 jb init
 
 # Download kube-prometheus
-jb install github.com/coreos/prometheus-operator/contrib/kube-prometheus/jsonnet/kube-prometheus/@v0.29.0
+jb install github.com/coreos/kube-prometheus/jsonnet/kube-prometheus
 
 # Create output folder
-mkdir manifests
+mkdir dist
 
 # Compile jsonnet to JSON and convert to YAML
-jsonnet -J vendor -m manifests "${kube-prometheus.jsonnet}" | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml; rm -f {}' -- {}
+jsonnet -J vendor -m dist kube-prometheus.jsonnet | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml; rm -f {}' -- {}
 ```
 
 ### Deploy
 
 ```bash
-kubectl -n monitoring apply -f ./manifests/.
+kubectl -n monitoring apply -f ./dist/.
 ```
 
 ### Usage
