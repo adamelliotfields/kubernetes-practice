@@ -8,3 +8,7 @@ command:
 rbac:
   create: false
   serviceAccountName: heapster
+
+# https://github.com/kubernetes/autoscaler/tree/master/addon-resizer
+resizer:
+  enabled: false
