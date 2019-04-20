@@ -1,4 +1,8 @@
 enableSkipLogin: true
+enableInsecureLogin: true
+
+service:
+  externalPort: 9090
 
 rbac:
   clusterAdminRole: true

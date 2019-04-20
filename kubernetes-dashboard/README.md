@@ -8,9 +8,10 @@ The official UI for Kubernetes, written in Angular.
 
 ### Deploy
 
-The Helm values enable the "skip login" button and use the `cluster-admin` role for RBAC. This setup
-makes trying out the dashboard simple, but you should use more fine-grained access control in
-production.
+The Helm values enable the "skip login" button and use the `cluster-admin` role for RBAC. The
+dashboard is served over HTTP on port 9090 instead of HTTPS on port 443.
+
+This setup makes trying out the dashboard simple, but is literally the most insecure configuration.
 
 ```bash
 helm install stable/kubernetes-dashboard \
@@ -24,7 +25,7 @@ helm install stable/kubernetes-dashboard \
 The easiest way to access the dashboard is via port forwarding.
 
 ```bash
-kubectl -n kube-system port-forward svc/kubernetes-dashboard 8443:443
+kubectl -n kube-system port-forward svc/kubernetes-dashboard 9090
 ```
 
 ### Heapster
