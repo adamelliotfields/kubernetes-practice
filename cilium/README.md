@@ -25,13 +25,15 @@ sudo kubectl create secret generic cilium-etcd-secrets \
 Make sure the manifest matches your Kubernetes version (1.14 shown here).
 
 ```bash
-wget https://raw.githubusercontent.com/cilium/cilium/v1.5.0-rc2/examples/kubernetes/1.14/cilium-external-etcd.yaml
+wget https://raw.githubusercontent.com/cilium/cilium/1.4.4/examples/kubernetes/1.14/cilium-external-etcd.yaml
 ```
 
 ### Edit the ConfigMap in the manifest
 
 Change `EDIT-ME-ETCD-ADDRESS` to your ETCD advertise address (the public IP of your Master node if
 using Kubeadm). Make sure the protocol is `https`.
+
+Note that on EC2, you must use the private IP. See [Public IPv4 Addresses](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html#vpc-public-ipv4-addresses).
 
 ```yaml
 ...
