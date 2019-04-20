@@ -4,13 +4,3 @@ configInline:
     protocol: layer2
     addresses:
     - '127.0.0.1/32'
-controller:
-  resources:
-    limits:
-      cpu: 100m
-      memory: 100Mi
-speaker:
-  resources:
-    limits:
-      cpu: 100m
-      memory: 100Mi
