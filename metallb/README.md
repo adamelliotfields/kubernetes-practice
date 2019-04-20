@@ -21,7 +21,7 @@ multiple IP addresses on different subnets, use the `/32` suffix. This [calculat
 will help.
 
 The IP address in this example is localhost, so you should change it to the public IP(s) of your
-cluster.
+cluster (private IPs on EC2).
 
   - [`metallb-values.yaml`](./metallb-values.yaml)
 
@@ -37,24 +37,22 @@ helm install stable/metallb \
 ### Traffic Policy
 
 When creating a LoadBalancer Service, the default Traffic Policy is `Cluster`. This policy will
-distribute traffic to all Pods exposed by the Service, regardless of which node they are deployed
-to. The downside is that Kube Proxy will obscure the source IP of the incoming request, so logs
-will show that the request came from the Service.
+evenly distribute traffic to all Pods exposed by the Service, regardless of which node they are
+deployed to. The downside is that Kube Proxy will SNAT the source IP of the incoming request. It can
+also redirect a request to a different node, creating an additional hop.
 
-Alternatively, the `Local` Traffic Policy will maintain the source IP of the request, however, it
-will only direct traffic to Pods on a single node.
+Alternatively, the `Local` Traffic Policy will maintain the source IP of the request; however, it
+will only send traffic to Pods on the same node that received the request. This means that the
+Ingress Controller Pod must be running on the node with the external IP. You can ensure proper
+Pod assignment by using `nodeSelector` / `nodeAffinity` or deploying the Ingress Controller as a
+Daemonset.
+
+You can read more about external traffic policies [here](https://www.asykim.com/blog/deep-dive-into-kubernetes-external-traffic-policies).
 
 To use the `Local` policy with `nginx-ingress`, your Helm values should contain:
 
 ```yaml
 controller:
-  # Default is Deployment
-  kind: Deployment
-  # Default is 1
-  replicaCount: 1
   service:
-    # Default is LoadBalancer
-    type: LoadBalancer
-    # Default is Cluster
     externalTrafficPolicy: Local
 ```
