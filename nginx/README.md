@@ -4,6 +4,7 @@ A basic NGINX Deployment, Service, and Ingress.
 
 ### Prerequisites
   - You must have an Ingress Controller already deployed in your cluster.
+  - You must have a domain name pointed at your cluster.
 
 ### Manifests
 
@@ -11,8 +12,12 @@ A basic NGINX Deployment, Service, and Ingress.
 
 ### Deploy
 
+Change `example.com` in the manifest to your domain name.
+
 ```bash
-kubectl -n default apply -f ./nginx.yaml
+kubectl create ns nginx
+
+kubectl -n nginx apply -f ./nginx.yaml
 ```
 
 ### Monitoring
@@ -20,18 +25,3 @@ kubectl -n default apply -f ./nginx.yaml
 If exporting Prometheus metrics from the NGINX Ingress Controller (not to be confused with the NGINX
 web application deployed here), the Ingress resource must have a host; otherwise, metrics will not
 be generated.
-
-```yaml
-spec:
-  rules:
-  - host: example.com
-    http:
-      paths:
-      - backend:
-          serviceName: nginx
-          servicePort: 80
-```
-
-### Cert Manager
-
-TODO
