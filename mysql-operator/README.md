@@ -12,7 +12,7 @@ A Kubernetes controller for managing MySQL clusters, including backup and restor
 
 ### Manifests
 
-  - [`mysql-agent-default-rbac.yaml`](./mysql-agent-default-rbac.yaml) _(ServiceAccount, RoleBinding)_
+  - [`mysql-agent-rbac.yaml`](./mysql-agent-rbac.yaml) _(ServiceAccount, RoleBinding)_
   - [`mysql-cluster.yaml`](./mysql-cluster.yaml) _(Cluster)_
   - [`mysql-router.yaml`](./mysql-router.yaml) _(Service, Deployment)_
   - [`wordpress-backup.yaml`](./wordpress-backup.yaml) _(Backup)_
@@ -21,16 +21,22 @@ A Kubernetes controller for managing MySQL clusters, including backup and restor
 ### Deploy
 
 ```bash
+# Clone the repo
+git clone https://github.com/oracle/mysql-operator
+
 # Install the chart
 helm install ./mysql-operator/mysql-operator \
 --name=mysql-operator \
 --namespace=mysql-operator
 
-# Add ServiceAccount and RoleBinding to the default namespace
-kubectl -n default apply -f ./mysql-operator-rbac.yaml
+# Create the mysql namespace
+kubectl create ns mysql
+
+# Add ServiceAccount and RoleBinding to the mysql namespace
+kubectl -n mysql apply -f ./mysql-agent-rbac.yaml
 
 # Deploy a 3-node cluster
-kubectl -n default apply -f ./mysql-cluster.yaml
+kubectl -n mysql apply -f ./mysql-cluster.yaml
 ```
 
 ### Router
@@ -40,7 +46,7 @@ directly. If the leader goes down, the cluster will elect a new leader and the r
 connect you to it automatically.
 
 ```bash
-kubectl -n default apply -f ./mysql-router.yaml
+kubectl -n mysql apply -f ./mysql-router.yaml
 ```
 
 ### Backup
@@ -57,7 +63,7 @@ scheduled backup example.
 MINIO_ACCESS_KEY=$(kubectl -n default get secret minio -o jsonpath='{.data.accesskey}' | base64 -d)
 MINIO_SECRET_KEY=$(kubectl -n default get secret minio -o jsonpath='{.data.secretkey}' | base64 -d)
 
-kubectl -n default create secret generic minio-credentials \
+kubectl -n mysql create secret generic minio-credentials \
 --from-literal=accessKey=${MINIO_ACCESS_KEY} \
 --from-literal=secretKey=${MINIO_SECRET_KEY}
 ```
@@ -65,7 +71,7 @@ kubectl -n default create secret generic minio-credentials \
 **Deploy the Backup**
 
 ```bash
-kubectl -n default apply -f ./wordpress-backup.yaml
+kubectl -n mysql apply -f ./wordpress-backup.yaml
 ```
 
 ### Restore
@@ -74,5 +80,5 @@ The `clusterRef` is the name of the cluster to apply the backup to, while the ba
 `metadata.name` of the Backup to use.
 
 ```bash
-kubectl -n default apply -f ./wordpress-restore.yaml
+kubectl -n mysql apply -f ./wordpress-restore.yaml
 ```
