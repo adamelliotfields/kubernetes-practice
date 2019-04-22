@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: mysql-root-password
+  labels:
+    app: mysql
+stringData:
+  password: root
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+  - name: mysql
+    port: 3306
+  - name: mysqlx
+    port: 33060
+  - name: xcom
+    port: 33061
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  labels:
+    app: mysql
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  serviceName: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql/mysql-server:8.0.15
+        command:
+        - /bin/bash
+        args:
+        - -c
+        - >-
+          /entrypoint.sh
+          --server-id=$(expr $(echo $HOSTNAME | grep -o '[^-]*$') + 1)
+          --report-host=${HOSTNAME}.mysql
+          --binlog-checksum=NONE
+          --enforce-gtid-consistency=ON
+          --gtid-mode=ON
+          --default-authentication-plugin=mysql_native_password
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-root-password
+              key: password
+        - name: MYSQL_ROOT_HOST
+          value: '%'
+        ports:
+        - name: mysql
+          containerPort: 3306
+        - name: mysqlx
+          containerPort: 33060
+        - name: xcom
+          containerPort: 33061
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql
+      labels:
+        app: mysql
+    spec:
+      storageClassName: hostpath
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
