@@ -1,5 +1,8 @@
 .idea/
 .vscode/
 
-/kube-prometheus/manifests/
+# Kube Prometheus
+/kube-prometheus/dist/
 /kube-prometheus/vendor/
+/kube-prometheus/jsonnetfile.json
+/kube-prometheus/jsonnetfile.lock.json
