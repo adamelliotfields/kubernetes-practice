@@ -9,7 +9,14 @@ spec:
   selector:
     app: mysql-router
   ports:
-  - port: 6446
+  - name: mysql-rw
+    port: 6446
+  - name: mysql-ro
+    port: 6447
+  - name: mysqlx-rw
+    port: 64460
+  - name: mysqlx-ro
+    port: 64470
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,12 +36,12 @@ spec:
     spec:
       containers:
       - name: mysql-router
-        image: mysql/mysql-router:8.0.11
+        image: mysql/mysql-router:8.0.15
         env:
         - name: MYSQL_HOST
-          value: mysql-0.mysql.default.svc.cluster.local
+          value: mysql-0.mysql
         - name: MYSQL_PORT
-          value: "3306"
+          value: '3306'
         - name: MYSQL_USER
           value: root
         - name: MYSQL_PASSWORD
@@ -42,7 +49,12 @@ spec:
             secretKeyRef:
               name: mysql-root-password
               key: password
-        - name: MYSQL_INNODB_NUM_MEMBERS
-          value: "3"
         ports:
-        - containerPort: 6446
+        - name: mysql-rw
+          containerPort: 6446
+        - name: mysql-ro
+          containerPort: 6447
+        - name: mysqlx-rw
+          containerPort: 64460
+        - name: mysqlx-ro
+          containerPort: 64470
