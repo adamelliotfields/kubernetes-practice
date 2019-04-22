@@ -1,4 +1,12 @@
 controller:
+  config:
+    worker-processes: '1'
+    max-worker-connections: '65535'
+    server-tokens: 'false'
+    use-gzip: 'false'
+    use-geoip: 'false'
+  service:
+    externalTrafficPolicy: Local
   stats:
     enabled: true
   metrics:
