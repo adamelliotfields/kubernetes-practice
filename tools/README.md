@@ -5,14 +5,16 @@
 _Currently used command-line interfaces._
 
   - [ctop](https://github.com/bcicen/ctop)
+  - [dive](https://github.com/wagoodman/dive)
   - [etcdctl](https://github.com/etcd-io/etcd/tree/master/etcdctl)
   - [helm](https://github.com/helm/helm)
   - [k9s](https://github.com/derailed/k9s)
   - [krew](https://github.com/GoogleContainerTools/krew)
+  - [kube-bench](https://github.com/aquasecurity/kube-bench)
+  - [kube-score](https://github.com/zegl/kube-score)
   - [kube-shell](https://github.com/cloudnativelabs/kube-shell)
   - [kubectl](https://github.com/kubernetes/kubectl)
   - [kubectx](https://github.com/ahmetb/kubectx)
-  - [logcli](https://github.com/grafana/loki/blob/master/docs/logcli.md)
   - [stern](https://github.com/wercker/stern)
 
 ### Containers
