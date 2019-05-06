@@ -1,0 +1,9 @@
+datadog:
+  apiKeyExistingSecret: datadog-secret
+  env:
+  - name: DD_KUBELET_TLS_VERIFY
+    value: "false"
+
+clusterAgent:
+  enabled: true
+  token: "thirtyXtwoXcharactersXlongXtoken"

@@ -12,6 +12,7 @@
   - [argo-tunnel](./argo-tunnel/)
   - [cert-manager](./cert-manager/)
   - [cilium](./cilium/)
+  - [datadog](./datadog/)
   - [debian](./debian/)
   - [ghost](./ghost/)
   - [heapster](./heapster/)
