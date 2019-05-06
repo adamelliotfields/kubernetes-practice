@@ -9,6 +9,7 @@
 
 ### Workloads
 
+  - [argo-tunnel](./argo-tunnel/)
   - [cert-manager](./cert-manager/)
   - [cilium](./cilium/)
   - [debian](./debian/)
