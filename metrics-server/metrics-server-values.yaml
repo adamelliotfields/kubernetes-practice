@@ -1,4 +1,3 @@
 args:
-- --logtostderr
 - --kubelet-insecure-tls=true
 - --kubelet-preferred-address-types=InternalDNS,InternalIP,ExternalDNS,ExternalIP,Hostname

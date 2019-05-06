@@ -1,7 +1,7 @@
 # Metrics Server
 
 Metrics Server is the successor to Heapster for providing Pod and Node resource utilization. It
-provides the data for the `kubectl top` command.
+provides the data for the `kubectl top` command and the Vertical Pod Autoscaler resource.
 
 > At this time, Metrics Server has not been integrated into the Kubernetes Dashboard. If you plan on
 > using the dashboard, stick with Heapster for now.
