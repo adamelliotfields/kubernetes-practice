@@ -21,6 +21,7 @@
   - [kube-prometheus](./kube-prometheus/)
   - [kubedb](./kubedb/)
   - [kubernetes-dashboard](./kubernetes-dashboard/)
+  - [logdna](./logdna/)
   - [loki](./loki/)
   - [metallb](./metallb/)
   - [metrics-server](./metrics-server/)
