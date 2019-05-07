@@ -3,6 +3,16 @@ datadog:
   env:
   - name: DD_KUBELET_TLS_VERIFY
     value: "false"
+  # https://github.com/DataDog/datadog-agent/issues/1961
+  confd:
+    disk.yaml: |-
+      init_config:
+      instances:
+      - use_mount: false
+        excluded_filesystems:
+        - autofs
+        - /proc/sys/fs/binfmt_misc
+        - /host/proc/sys/fs/binfmt_misc
 
 clusterAgent:
   enabled: true
