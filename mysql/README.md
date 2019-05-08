@@ -59,30 +59,31 @@ replication.
 
 Some manual steps are needed to prepare the cluster for group replication.
 
-First, get the CIDR block used to assign IP addresses to Pods. If you passed `--pod-network-cidr` to
-`kubeadm init`, use that.
-
-Cilium applies an annotation to Nodes, so we can get the CIDR from that. Note the escape slashes.
+First, get the CIDR block used to assign IP addresses to Pods. This will be different for each node.
 
 ```bash
-kubectl get node -o jsonpath='{.items[].metadata.annotations.io\.cilium\.network\.ipv4-pod-cidr}'
+# Replace kubeadm with the name of your node(s)
+kubectl get node kubeadm -o jsonpath='{.spec.podCIDR}'
 ```
 
-Once each replica has finished intializing, enable the Group Replication plugin and whitelist the
-Pod CIDR.
+You need to ensure the subnet you whitelist includes all of the possible Pod IP addresses. Use
+<https://www.ipaddressguide.com/cidr> for help.
+
+Use `@@PERSIST` to persist settings to `/var/lib/mysql/mysql-auto.cnf`, so they will survive
+container restarts.
 
 ```bash
+# Replace 10.1.0.0/16 with your subnet
 for i in {0..2}; do
   cat <<'  EOF' | kubectl -n mysql exec -i db-${i} -- mysql -uroot -proot
 INSTALL PLUGIN group_replication SONAME 'group_replication.so';
-SET @@GLOBAL.group_replication_ip_whitelist = '10.1.0.0/16';
+SET @@PERSIST.group_replication_ip_whitelist = '10.1.0.0/16';
   EOF
 done
 ```
 
 The default value for `group_replication_ip_whitelist` is `AUTOMATIC`. To make sure it was properly
-set to our Pod CIDR block, you can run the query `SELECT @@group_replication_ip_whitelist;` on each
-cluster member.
+set, you can run the query `SELECT @@group_replication_ip_whitelist;` on each cluster member.
 
 Now run `mysqlsh` on `db-0` and connect to it.
 
