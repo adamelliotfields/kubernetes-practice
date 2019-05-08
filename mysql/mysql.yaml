@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql/mysql-server:8.0.15
+        image: mysql/mysql-server:8.0.16
         command:
         - /bin/bash
         args:
@@ -77,6 +77,7 @@ spec:
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
+          subPath: mysql
   volumeClaimTemplates:
   - metadata:
       name: mysql
