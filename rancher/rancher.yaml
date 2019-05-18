@@ -1,0 +1,98 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rancher
+  labels:
+    app: rancher
+spec:
+  selector:
+    app: rancher
+  ports:
+  - name: http
+    port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rancher
+  labels:
+    app: rancher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rancher
+  template:
+    metadata:
+      labels:
+        app: rancher
+    spec:
+      serviceAccountName: rancher
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app: rancher
+      containers:
+      - name: rancher
+        image: rancher/rancher:v2.2.3
+        ports:
+        - containerPort: 80
+        args:
+        - '--http-listen-port=80'
+        - '--https-listen-port=443'
+        - '--add-local=false'
+        - '--k8s-mode=external'
+        env:
+        - name: CATTLE_NAMESPACE
+          value: rancher-system
+        - name: CATTLE_PEER_SERVICE
+          value: rancher
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        volumeMounts:
+        - name: tls-ca
+          mountPath: /etc/rancher/ssl/cacerts.pem
+          subPath: cacerts.pem
+          readOnly: true
+      volumes:
+      - name: tls-ca
+        secret:
+          secretName: tls-ca
+          defaultMode: 0400
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: rancher
+  labels:
+    app: rancher
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    certmanager.k8s.io/cluster-issuer: letsencrypt-staging
+spec:
+  rules:
+  - host: rancher.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: rancher
+          servicePort: 80
+  tls:
+  - secretName: rancher-example-com
+    hosts:
+    - rancher.example.com

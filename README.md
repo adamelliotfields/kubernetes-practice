@@ -31,6 +31,7 @@
   - [nginx](./nginx/)
   - [nginx-ingress](./nginx-ingress/)
   - [prometheus-mysql-exporter](./prometheus-mysql-exporter/)
+  - [rancher](./rancher/)
   - [wordpress](./wordpress/)
 
 ### Tools
