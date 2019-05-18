@@ -163,3 +163,6 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 to remove the default `NoSchedule` taint.
+
+If you get an `x509` error when trying to connect to your cluster remotely, it means you must pass
+your public IP address to the `--apiserver-cert-extra-sans` flag when running `kubeadm init`.
