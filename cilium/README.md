@@ -15,9 +15,9 @@ USER=adam
 sudo kubectl create secret generic cilium-etcd-secrets \
 -n kube-system \
 --kubeconfig="/home/${USER}/.kube/config" \
---from-file=/etc/kubernetes/pki/etcd/ca.crt \
---from-file=/etc/kubernetes/pki/etcd/server.key \
---from-file=/etc/kubernetes/pki/etcd/server.crt
+--from-file=etcd-client-ca.crt=/etc/kubernetes/pki/etcd/ca.crt \
+--from-file=etcd-client.key=/etc/kubernetes/pki/etcd/server.key \
+--from-file=etcd-client.crt=/etc/kubernetes/pki/etcd/server.crt
 ```
 
 ### Download `cilium-external-etcd`
@@ -25,15 +25,17 @@ sudo kubectl create secret generic cilium-etcd-secrets \
 Make sure the manifest matches your Kubernetes version (1.14 shown here).
 
 ```bash
-wget https://raw.githubusercontent.com/cilium/cilium/1.4.4/examples/kubernetes/1.14/cilium-external-etcd.yaml
+wget https://raw.githubusercontent.com/cilium/cilium/v1.5.1/examples/kubernetes/1.14/cilium-external-etcd.yaml
 ```
 
 ### Edit the ConfigMap in the manifest
 
-Change `EDIT-ME-ETCD-ADDRESS` to your ETCD advertise address (the public IP of your Master node if
+Change `EDIT-ME-ETCD-ADDRESS` to your ETCD advertise address (the public IP of your master node if
 using Kubeadm). Make sure the protocol is `https`.
 
 Note that on EC2, you must use the private IP. See [Public IPv4 Addresses](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html#vpc-public-ipv4-addresses).
+
+Uncomment the lines for `ca-file`, `key-file`, and `cert-file`.
 
 ```yaml
 ...
@@ -42,9 +44,9 @@ data:
     ---
     endpoints:
       - https://EDIT-ME-ETCD-ADDRESS:2379
-    ca-file: '/var/lib/etcd-secrets/ca.crt'
-    key-file: '/var/lib/etcd-secrets/server.key'
-    cert-file: '/var/lib/etcd-secrets/server.crt'
+    ca-file: '/var/lib/etcd-secrets/etcd-client-ca.crt'
+    key-file: '/var/lib/etcd-secrets/etcd-client.key'
+    cert-file: '/var/lib/etcd-secrets/etcd-client.crt'
 ...
 ```
 
